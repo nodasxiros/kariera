@@ -45,6 +45,7 @@ export class CreateJobTable1626522776558 implements MigrationInterface {
         },
       ]
     });
+    await queryRunner.createTable(table, true);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

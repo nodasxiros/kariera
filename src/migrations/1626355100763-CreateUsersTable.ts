@@ -10,7 +10,6 @@ export class CreateUsersTable1626355100763 implements MigrationInterface {
             name: 'id',
             type: 'int',
             isNullable: false,
-            unsigned: true,
             isGenerated: true,
             generationStrategy: 'increment',
             isPrimary: true
@@ -33,7 +32,7 @@ export class CreateUsersTable1626355100763 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-      await queryRunner.dropTable('users');
+      await queryRunner.dropTable('user');
     }
 
 }
