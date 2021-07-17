@@ -3,6 +3,7 @@ import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ApiTags, ApiBearerAuth, ApiNoContentResponse, ApiQuery } from '@nestjs/swagger';
+import { InsertResult } from 'typeorm';
 
 @ApiBearerAuth()
 @ApiTags('companies')
@@ -11,7 +12,7 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Post()
-  async create(@Body() createCompanyDto: CreateCompanyDto) {
+  async create(@Body() createCompanyDto: CreateCompanyDto): Promise<InsertResult> {
     return await this.companiesService.create(createCompanyDto);
   }
 
