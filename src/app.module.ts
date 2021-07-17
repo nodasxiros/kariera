@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { Connection } from 'typeorm';
 import { User } from './users/user.entity';
+import { CompaniesModule } from './companies/companies.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -26,7 +28,9 @@ import { User } from './users/user.entity';
       logging: 'all',
       // autoLoadEntities: true,
     }),
-    UsersModule
+    UsersModule,
+    CompaniesModule,
+    JobsModule
   ],
   controllers: [AppController],
   providers: [AppService],
