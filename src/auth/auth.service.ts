@@ -20,7 +20,8 @@ export class AuthService {
 
   async login(user: User) {
     const payload = { username: user.username, sub: user.id };
-    const options = { expiresIn: process.env.JWT_EXPIRATION };
+    const options = { expiresIn: '1d' };
+    console.log({ payload, options})
     return {
       access_token: this.jwtService.sign(payload, options),
       user
