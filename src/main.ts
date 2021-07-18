@@ -6,6 +6,7 @@ function initSwagger(app) {
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Kariera API')
     .setDescription('This the Restful API for the kariera challenge')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerOptions);
   SwaggerModule.setup('api', app, document);
