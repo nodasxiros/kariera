@@ -3,7 +3,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from './job.entity';
-import { InsertResult, Repository, FindManyOptions } from 'typeorm';
+import { InsertResult, Repository, FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class JobsService {
@@ -23,7 +23,7 @@ export class JobsService {
       });
   }
 
-  findAll(options?: FindManyOptions): Promise<Job[]> {
+  findAll(options?: FindOneOptions<Job>): Promise<Job[]> {
     return this.jobRepository
       .find(options)
       .catch(err => {

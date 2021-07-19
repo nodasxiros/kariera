@@ -23,16 +23,16 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { Job } from './job.entity';
-import { InsertResult } from 'typeorm';
+import { ILike, InsertResult } from 'typeorm';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('jobs')
-@Controller('jobs')
+@Controller()
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
-  @Post()
+  @Post('jobs')
   @ApiCreatedResponse({ status: 201, description: 'Created'})
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   @UseGuards(JwtAuthGuard)
@@ -41,7 +41,7 @@ export class JobsController {
       
   }
 
-  @Get()
+  @Get('jobs')
   @ApiOkResponse({ status: 200, description: 'Result' })
   @ApiNotFoundResponse({ status: 404, description: 'Not found' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
@@ -69,7 +69,7 @@ export class JobsController {
   @ApiNotFoundResponse({ status: 404, description: 'Not found' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   async findOne(@Param('id') id: string) {
-    const res = await this.jobsService.findOne(+id);
+    const res: any = await this.jobsService.findOne(+id);
     if (!res) throw new NotFoundException({
       status: 404,
       message: 'No results with these criteria'
@@ -77,7 +77,35 @@ export class JobsController {
     return res;
   }
 
-  @Patch(':id')
+  @Get('jobs/search')
+  @ApiOkResponse({ status: 200, description: 'Result' })
+  @ApiNotFoundResponse({ status: 404, description: 'Not found' })
+  @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    schema: {
+      type: 'string',
+      example: ''
+    }
+  })
+  async search(
+    @Query('query') query: string = ``,
+  ): Promise<Job[]> {
+    const res: any = await this.jobsService.findAll({
+      where: [
+        { title: ILike(`%${query}%`) },
+        { description: ILike(`%${query}%`) }
+      ]
+    })
+    if (!res.length) throw new NotFoundException({
+      status: 404,
+      message: 'No results with these criteria'
+    });
+    return res;
+  }
+
+  @Patch('jobs/:id')
   @ApiOkResponse({ status: 200, description: 'Job has been updated' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   @UseGuards(JwtAuthGuard)
@@ -85,7 +113,7 @@ export class JobsController {
     return await this.jobsService.update(+id, updateJobDto);
   }
 
-  @Delete(':id')
+  @Delete('jobs/:id')
   @ApiOkResponse({ status: 200, description: 'Job has been deleted' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   @UseGuards(JwtAuthGuard)
