@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -22,6 +23,7 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { InsertResult } from 'typeorm';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('companies')
@@ -32,6 +34,7 @@ export class CompaniesController {
   @Post()
   @ApiCreatedResponse({ status: 201, description: 'Created'})
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @UseGuards(JwtAuthGuard)
   async create(@Body() createCompanyDto: CreateCompanyDto): Promise<InsertResult> {
     return await this.companiesService.create(createCompanyDto);
   }
@@ -77,6 +80,7 @@ export class CompaniesController {
   @Patch(':id')
   @ApiOkResponse({ status: 200, description: 'Company has been updated' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
     return this.companiesService.update(+id, updateCompanyDto);
   }
@@ -84,6 +88,7 @@ export class CompaniesController {
   @Delete(':id')
   @ApiOkResponse({ status: 200, description: 'Company has been updated' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.companiesService.remove(+id);
   }

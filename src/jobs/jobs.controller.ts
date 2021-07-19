@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseGuards
 } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
@@ -23,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { Job } from './job.entity';
 import { InsertResult } from 'typeorm';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('jobs')
@@ -33,6 +35,7 @@ export class JobsController {
   @Post()
   @ApiCreatedResponse({ status: 201, description: 'Created'})
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @UseGuards(JwtAuthGuard)
   async create(@Body() createJobDto: CreateJobDto): Promise<InsertResult> {
     return await this.jobsService.create(createJobDto)
       
@@ -77,6 +80,7 @@ export class JobsController {
   @Patch(':id')
   @ApiOkResponse({ status: 200, description: 'Job has been updated' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto) {
     return await this.jobsService.update(+id, updateJobDto);
   }
@@ -84,6 +88,7 @@ export class JobsController {
   @Delete(':id')
   @ApiOkResponse({ status: 200, description: 'Job has been deleted' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string) {
     return await this.jobsService.remove(+id);
   }
