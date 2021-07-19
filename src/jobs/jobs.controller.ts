@@ -1,8 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  NotFoundException,
+} from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { ApiTags, ApiBearerAuth, ApiNoContentResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { Job } from './job.entity';
 import { InsertResult } from 'typeorm';
 
@@ -13,32 +31,58 @@ export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Post()
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async create(@Body() createJobDto: CreateJobDto): Promise<InsertResult> {
-    return await this.jobsService.create(createJobDto);
+    return await this.jobsService.create(createJobDto)
+      
   }
 
   @Get()
-  @ApiQuery({ name: 'where', required: false })
-  findAll(@Query('where') where: object = {}): Promise<Job[]> {
-    console.log({ where })
-    return this.jobsService.findAll({
-      where
+  @ApiNotFoundResponse({ status: 404, description: 'Not found' })
+  @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  @ApiQuery({
+    name: 'where',
+    required: false,
+    schema: {
+      type: 'string',
+      example: '{ "id": 1 }'
+    }
+  })
+  async findAll(@Query('where') where: string = `{}`): Promise<Job[]> {
+    const res = await this.jobsService.findAll({
+      where: JSON.parse(where)
     });
+    if (!res.length) throw new NotFoundException({
+      status: 404,
+      message: 'No results with these criteria'
+    })
+    return res;
   }
 
   @Get(':id')
-  @ApiNoContentResponse({ status: 404, description: 'Not found' })
-  findOne(@Param('id') id: string) {
-    return this.jobsService.findOne(+id);
+  @ApiNotFoundResponse({ status: 404, description: 'Not found' })
+  @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  async findOne(@Param('id') id: string) {
+    const res = await this.jobsService.findOne(+id);
+    if (!res) throw new NotFoundException({
+      status: 404,
+      message: 'No results with these criteria'
+    })
+    return res;
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto) {
-    return this.jobsService.update(+id, updateJobDto);
+  @ApiOkResponse({ status: 200, description: 'Job has been updated' })
+  @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  async update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto) {
+    return await this.jobsService.update(+id, updateJobDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jobsService.remove(+id);
+  @ApiOkResponse({ status: 200, description: 'Job has been deleted' })
+  @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
+  async remove(@Param('id') id: string) {
+    return await this.jobsService.remove(+id);
   }
 }

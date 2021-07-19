@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,22 +12,62 @@ export class JobsService {
     private jobRepository: Repository<Job>
   ) {}
   create(createJobDto: CreateJobDto): Promise<InsertResult> {
-    return this.jobRepository.insert(createJobDto);
+    return this.jobRepository
+      .insert(createJobDto)
+      .catch(err => {
+        throw new BadRequestException({
+          name: err.name,
+          message: err.message,
+          detail: err.detail,
+        });
+      });
   }
 
-  findAll(options?: object): Promise<Job[]> {
-    return this.jobRepository.find(options);
+  findAll(options?: FindManyOptions): Promise<Job[]> {
+    return this.jobRepository
+      .find(options)
+      .catch(err => {
+        throw new BadRequestException({
+          name: err.name,
+          message: err.message,
+          detail: err.detail,
+        });
+      });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} job`;
+    return this.jobRepository
+      .findOne(id)
+      .catch(err => {
+        throw new BadRequestException({
+          name: err.name,
+          message: err.message,
+          detail: err.detail,
+        })
+      });
   }
 
   update(id: number, updateJobDto: UpdateJobDto) {
-    return `This action updates a #${id} job`;
+    return this.jobRepository
+      .update(+id, updateJobDto)
+      .catch(err => {
+        throw new BadRequestException({
+          name: err.name,
+          message: err.message,
+          detail: err.detail,
+        });
+      });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} job`;
+    return this.jobRepository
+      .softDelete(+id)
+      .catch(err => {
+        throw new BadRequestException({
+          name: err.name,
+          message: err.message,
+          detail: err.detail,
+        });
+      });
   }
 }
