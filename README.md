@@ -24,25 +24,32 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Kariera](https://www.kariera.gr/) challenge repository.
 
 ## Installation
 
 ```bash
-$ npm install
+$ yarn
 ```
+After the installation has finished:
+```bash
+# create .env
+$ cp .env.example .env
 
+# download postgres docker image
+$ docker pull postgres
+
+# run bash script to create db
+sh start-db.sh
+
+# run the db migration files to create tables
+$ yarn typeorm migration:run
+```
 ## Running the app
 
 ```bash
-# development
-$ npm run start
-
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
