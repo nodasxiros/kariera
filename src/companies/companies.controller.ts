@@ -19,10 +19,10 @@ export class CompaniesController {
   @Get()
   @ApiQuery({ name: 'where', required: false })
   async findAll(
-    @Query('where') where?: string,
+    @Query('where') where: object = {},
   ) {
     return await this.companiesService.findAll({
-      where: where ? JSON.parse(where) : undefined
+      where
     });
   }
 

@@ -19,9 +19,10 @@ export class JobsController {
 
   @Get()
   @ApiQuery({ name: 'where', required: false })
-  findAll(@Query('where') where?: string): Promise<Job[]> {
+  findAll(@Query('where') where: object = {}): Promise<Job[]> {
+    console.log({ where })
     return this.jobsService.findAll({
-      where: where ? JSON.parse(where) : undefined
+      where
     });
   }
 

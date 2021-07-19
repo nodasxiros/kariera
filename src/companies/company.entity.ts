@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Job } from '../jobs/job.entity';
 
 @Entity()
 export class Company {
@@ -26,5 +28,12 @@ export class Company {
 
   @DeleteDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   deleted_at: Date;
+
+  @OneToMany(() => Job, job => job.company, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT'
+  })
+  jobs: Job[];
 
 }

@@ -5,5 +5,8 @@ export class CreateJobDto {
 
   @ApiProperty()
   description: string;
+
+  @ApiProperty()
+  company_id: number;
 }
 

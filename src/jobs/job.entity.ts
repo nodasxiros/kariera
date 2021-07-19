@@ -5,7 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Company } from '../companies/company.entity';
 
 @Entity()
 export class Job {
@@ -18,6 +21,9 @@ export class Job {
   @Column()
   description: string;
 
+  @Column({ type: "int" })
+  company_id: number;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   created_at: Date;
 
@@ -26,5 +32,9 @@ export class Job {
 
   @DeleteDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   deleted_at: Date;
+
+  @ManyToOne(() => Company, company => company.jobs, { onDelete: 'CASCADE', onUpdate: 'RESTRICT' })
+  @JoinColumn({ name: 'company_id', referencedColumnName: 'id' })
+  company: Company;
 
 }
