@@ -31,14 +31,15 @@ export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Post()
-  @ApiCreatedResponse()
-  @ApiBadRequestResponse()
+  @ApiCreatedResponse({ status: 201, description: 'Created'})
+  @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   async create(@Body() createJobDto: CreateJobDto): Promise<InsertResult> {
     return await this.jobsService.create(createJobDto)
       
   }
 
   @Get()
+  @ApiOkResponse({ status: 200, description: 'Result' })
   @ApiNotFoundResponse({ status: 404, description: 'Not found' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   @ApiQuery({
@@ -56,11 +57,12 @@ export class JobsController {
     if (!res.length) throw new NotFoundException({
       status: 404,
       message: 'No results with these criteria'
-    })
+    });
     return res;
   }
 
   @Get(':id')
+  @ApiOkResponse({ status: 200, description: 'Result' })
   @ApiNotFoundResponse({ status: 404, description: 'Not found' })
   @ApiBadRequestResponse({ status: 400, description: 'Bad request'})
   async findOne(@Param('id') id: string) {
@@ -68,7 +70,7 @@ export class JobsController {
     if (!res) throw new NotFoundException({
       status: 404,
       message: 'No results with these criteria'
-    })
+    });
     return res;
   }
 
